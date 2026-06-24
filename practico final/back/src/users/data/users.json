@@ -1,0 +1,32 @@
+[
+    {
+        "id": 1,
+        "name": "Juan Pérez",
+        "username": "juanperez",
+        "email": "juanp@gmail.com"
+    },
+    {
+        "id": 2,
+        "name": "María García",
+        "username": "mariagarcia123",
+        "email": "mariag@gmail.com"
+    },
+    {
+        "id": 3,
+        "name": "Carlos Fernández",
+        "username": "carlosf_321",
+        "email": "fcarlos123@gmail.com"
+    },
+    {
+        "id": 4,
+        "name": "Ana Martínez",
+        "username": "anamartinez",
+        "email": "anam@gmail.com"
+    },
+    {
+        "id": 5,
+        "name": "Pedro Rodríguez",
+        "username": "pedror",
+        "email": "pedrorodri@gmail.com"
+    }
+]
