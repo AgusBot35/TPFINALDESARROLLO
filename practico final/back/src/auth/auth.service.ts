@@ -1,9 +1,10 @@
 import { Repository } from "typeorm";
-import { ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from 'bcrypt';
+import { randomUUID } from "crypto";
 
 import { UserRol } from "./types/user-role.enum";
 import { Payload } from "./types/payload.type";
@@ -11,6 +12,7 @@ import { UserRegister } from "./dto/user-register.dto";
 import { UserLogin } from "./dto/user-login.dto";
 import { AuthResult } from "./dto/auth-result.dto";
 import { UserEntity } from "../users/entities/user.entity";
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +20,8 @@ export class AuthService {
         @InjectRepository(UserEntity)
         private readonly usersRepo: Repository<UserEntity>,
         private readonly configService: ConfigService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly mailService: MailService
     ) {}
 
     async register(userRegister: UserRegister): Promise<AuthResult> {
@@ -29,6 +32,8 @@ export class AuthService {
         if (exists) {
             throw new ConflictException('Email ya registrado');
         }
+
+        const token = randomUUID();
 
         const cost = Number(this.configService.getOrThrow<string>('BCRYPT_COST') ?? '12');
         const passwordHash = await bcrypt.hash(userRegister.password, cost);
@@ -42,12 +47,22 @@ export class AuthService {
             role
         });
 
+        user.verificationToken = token;
+        user.isVerified = false;
+
+        await this.mailService.sendVerificationEmail(
+            user.email,
+            token
+        );
+
         const userSaved = await this.usersRepo.save(user);
         return {
             id: userSaved.id,
             email: userSaved.email,
             role: userSaved.role
         };
+
+        
     }
 
     async login(userLogin: UserLogin): Promise<{ access_token: string }> {
@@ -60,6 +75,12 @@ export class AuthService {
         
         if (!user) {
             throw new UnauthorizedException('Credenciales inválidas');
+        }
+
+        if (!user.isVerified) {
+            throw new UnauthorizedException(
+                'Debes verificar tu email'
+            );
         }
         
         const ok = await bcrypt.compare(userLogin.password, user.passwordHash);
@@ -75,5 +96,28 @@ export class AuthService {
         const access_token = this.jwtService.sign(payload);
 
         return { access_token };
+    }
+
+    async verifyEmail(token: string) {
+        const user = await this.usersRepo.findOne({
+            where: {
+                verificationToken: token
+            }
+        });
+
+        if (!user) {
+            throw new BadRequestException(
+                'Token inválido o expirado'
+            );
+        }
+
+        user.isVerified = true;
+        user.verificationToken = null;
+
+        await this.usersRepo.save(user);
+
+        return {
+            message: 'Email verificado'
+        };
     }
 }

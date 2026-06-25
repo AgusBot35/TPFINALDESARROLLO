@@ -11,6 +11,7 @@ import { JwtStrategy } from "./strategies/jwt.strategy";
 import { JwtAuthGuard } from "./guards/jwt-auth.guard";
 
 import { UserEntity } from "../users/entities/user.entity";
+import { MailModule } from '../mail/mail.module';
 
 @Module({
     imports: [
@@ -25,7 +26,8 @@ import { UserEntity } from "../users/entities/user.entity";
                     expiresIn: Number(configService.getOrThrow<string>('JWT_EXPIRES_SEC') ?? '3600')
                 }
             })
-        })
+        }),
+        MailModule
     ],
     controllers: [AuthController],
     providers: [
