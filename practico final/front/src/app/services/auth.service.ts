@@ -24,11 +24,9 @@ export class AuthService {
   }
 
   register(dto: RegisterDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.api}/register`, dto).pipe(
-      tap((res) => this.handleAuth(res)),
-    );
+    return this.http.post<AuthResponse>(`${this.api}/register`, dto);
   }
-
+  
   login(dto: LoginDto): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.api}/login`, dto).pipe(
       tap((res) => this.handleAuth(res)),
@@ -62,5 +60,12 @@ export class AuthService {
   private handleAuth(res: AuthResponse): void {
     localStorage.setItem(this.tokenKey, res.access_token);
     this.user.set(res.user);
+  }
+
+  verifyEmail(token: string) {
+    return this.http.post(
+      'http://localhost:3000/auth/verify-email',
+      { token }
+    );
   }
 }

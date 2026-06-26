@@ -2,6 +2,7 @@ import { BadGatewayException, Inject, Injectable, NotFoundException } from '@nes
 import { USERS_GATEWAY, UsersGateway } from '../gateways/users.gateway';
 import { ExternalUser } from '../user.types';
 
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -25,4 +26,3 @@ export class UsersService {
     }
   }
 }
-
