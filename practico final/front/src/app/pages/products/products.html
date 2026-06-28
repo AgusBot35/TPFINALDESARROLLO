@@ -12,8 +12,7 @@
 
   @if (error) {
     <div class="alert alert-danger d-flex align-items-center" role="alert">
-      <i class="bi bi-exclamation-triangle me-2"></i>
-      {{ error }}
+      <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
     </div>
   }
 
@@ -29,7 +28,7 @@
         </div>
         <div class="col-md-2">
           <label class="form-label fw-medium small text-muted">Ordenar por</label>
-          <select class="form-select form-select-sm" [(ngModel)]="sortBy">
+          <select class="form-select form-select-sm" [(ngModel)]="orderBy">
             <option value="id">ID</option>
             <option value="name">Nombre</option>
             <option value="price">Precio</option>
@@ -39,8 +38,8 @@
         <div class="col-md-2">
           <label class="form-label fw-medium small text-muted">Dirección</label>
           <select class="form-select form-select-sm" [(ngModel)]="order">
-            <option value="ASC">Ascendente</option>
-            <option value="DESC">Descendente</option>
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
           </select>
         </div>
         <div class="col-md-2">
@@ -57,128 +56,68 @@
       <div class="spinner-border" style="color: var(--primary)" role="status">
         <span class="visually-hidden">Cargando...</span>
       </div>
-      <p class="mt-2 text-muted">Cargando productos...</p>
     </div>
   } @else {
-    <!-- Desktop -->
     <div class="table-responsive d-none d-md-block">
       <table class="table table-hover align-middle mb-0">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Categoría</th>
-            @if (auth.isAdmin()) {
-              <th class="text-end">Acciones</th>
-            }
+            <th>ID</th><th>Nombre</th><th>Precio</th><th>Stock</th><th>Categoría</th>
+            @if (auth.isAdmin()) { <th class="text-end">Acciones</th> }
           </tr>
         </thead>
         <tbody>
           @for (product of products(); track product.id) {
             <tr>
               <td><code>{{ product.id }}</code></td>
+              <td><a [routerLink]="['/products', product.id]" class="fw-medium">{{ product.name }}</a></td>
+              <td class="fw-bold" style="color: var(--success)"><i class="bi bi-currency-dollar me-1"></i>{{ product.price }}</td>
               <td>
-                <a [routerLink]="['/products', product.id]" class="fw-medium">
-                  {{ product.name }}
-                </a>
-              </td>
-              <td class="fw-bold" style="color: var(--success)">
-                <i class="bi bi-currency-dollar me-1"></i>{{ product.price }}
-              </td>
-              <td>
-                @if (product.stock <= 0) {
-                  <span class="badge bg-danger">Sin stock</span>
-                } @else if (product.stock < 10) {
-                  <span class="badge" style="background: var(--warning-light); color: #92400e">
-                    <i class="bi bi-exclamation-triangle me-1"></i>{{ product.stock }}
-                  </span>
-                } @else {
-                  <span class="badge" style="background: var(--success-light); color: #065f46">
-                    <i class="bi bi-check-circle me-1"></i>{{ product.stock }}
-                  </span>
-                }
+                @if (product.stock <= 0) { <span class="badge bg-danger">Sin stock</span> }
+                @else if (product.stock < 10) { <span class="badge" style="background: var(--warning-light); color: #92400e"><i class="bi bi-exclamation-triangle me-1"></i>{{ product.stock }}</span> }
+                @else { <span class="badge" style="background: var(--success-light); color: #065f46"><i class="bi bi-check-circle me-1"></i>{{ product.stock }}</span> }
               </td>
               <td>
-                @if (product.category) {
-                  <span class="badge" style="background: var(--primary-light); color: var(--primary)">
-                    <i class="bi bi-tag me-1"></i>{{ product.category.name }}
-                  </span>
-                } @else {
-                  <span class="text-muted">—</span>
-                }
+                @if (product.category) { <span class="badge" style="background: var(--primary-light); color: var(--primary)"><i class="bi bi-tag me-1"></i>{{ product.category.name }}</span> }
+                @else { <span class="text-muted">—</span> }
               </td>
               @if (auth.isAdmin()) {
                 <td class="text-end">
-                  <button class="btn btn-sm btn-outline-warning me-1" (click)="openEdit(product)" title="Editar">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" (click)="deleteProduct(product.id)" title="Eliminar">
-                    <i class="bi bi-trash"></i>
-                  </button>
+                  <button class="btn btn-sm btn-outline-warning me-1" (click)="openEdit(product)" title="Editar"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="deleteProduct(product.id)" title="Eliminar"><i class="bi bi-trash"></i></button>
                 </td>
               }
             </tr>
           } @empty {
-            <tr>
-              <td colspan="6" class="text-center py-4 text-muted">
-                <i class="bi bi-inbox me-1"></i>No hay productos
-              </td>
-            </tr>
+            <tr><td colspan="6" class="text-center py-4 text-muted"><i class="bi bi-inbox me-1"></i>No hay productos</td></tr>
           }
         </tbody>
       </table>
     </div>
 
-    <!-- Mobile -->
     <div class="d-md-none">
       @for (product of products(); track product.id) {
         <div class="card shadow-sm mb-3">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-start mb-2">
-              <a [routerLink]="['/products', product.id]" class="fw-bold fs-6 text-decoration-none">
-                {{ product.name }}
-              </a>
-              <span class="fw-bold" style="color: var(--success)">
-                ${{ product.price }}
-              </span>
+              <a [routerLink]="['/products', product.id]" class="fw-bold fs-6 text-decoration-none">{{ product.name }}</a>
+              <span class="fw-bold" style="color: var(--success)">${{ product.price }}</span>
             </div>
             <div class="d-flex gap-2 flex-wrap mb-2">
-              @if (product.stock <= 0) {
-                <span class="badge bg-danger">Sin stock</span>
-              } @else if (product.stock < 10) {
-                <span class="badge" style="background: var(--warning-light); color: #92400e">
-                  <i class="bi bi-exclamation-triangle me-1"></i>{{ product.stock }} uds.
-                </span>
-              } @else {
-                <span class="badge" style="background: var(--success-light); color: #065f46">
-                  <i class="bi bi-check-circle me-1"></i>{{ product.stock }} uds.
-                </span>
-              }
-              @if (product.category) {
-                <span class="badge" style="background: var(--primary-light); color: var(--primary)">
-                  <i class="bi bi-tag me-1"></i>{{ product.category.name }}
-                </span>
-              }
+              @if (product.stock <= 0) { <span class="badge bg-danger">Sin stock</span> }
+              @else { <span class="badge" style="background: var(--success-light); color: #065f46">{{ product.stock }} uds.</span> }
+              @if (product.category) { <span class="badge" style="background: var(--primary-light); color: var(--primary)">{{ product.category.name }}</span> }
             </div>
             @if (auth.isAdmin()) {
               <div class="d-flex gap-2 mt-2 pt-2 border-top">
-                <button class="btn btn-sm btn-outline-warning flex-fill" (click)="openEdit(product)">
-                  <i class="bi bi-pencil me-1"></i>Editar
-                </button>
-                <button class="btn btn-sm btn-outline-danger flex-fill" (click)="deleteProduct(product.id)">
-                  <i class="bi bi-trash me-1"></i>Eliminar
-                </button>
+                <button class="btn btn-sm btn-outline-warning flex-fill" (click)="openEdit(product)"><i class="bi bi-pencil me-1"></i>Editar</button>
+                <button class="btn btn-sm btn-outline-danger flex-fill" (click)="deleteProduct(product.id)"><i class="bi bi-trash me-1"></i>Eliminar</button>
               </div>
             }
           </div>
         </div>
       } @empty {
-        <div class="text-center py-5 text-muted">
-          <i class="bi bi-inbox display-4 d-block mb-2"></i>
-          No hay productos
-        </div>
+        <div class="text-center py-5 text-muted"><i class="bi bi-inbox display-4 d-block mb-2"></i>No hay productos</div>
       }
     </div>
 
@@ -186,23 +125,13 @@
       <nav class="mt-4">
         <ul class="pagination justify-content-center mb-0">
           <li class="page-item" [class.disabled]="page === 1">
-            <a class="page-link" (click)="prevPage()">
-              <i class="bi bi-chevron-left"></i>
-              <span class="d-none d-md-inline"> Anterior</span>
-            </a>
+            <a class="page-link" (click)="prevPage()"><i class="bi bi-chevron-left"></i></a>
           </li>
           <li class="page-item disabled">
-            <span class="page-link">
-              <span class="d-none d-md-inline">Pág. {{ page }} de {{ totalPages() }}</span>
-              <span class="d-md-none">{{ page }}/{{ totalPages() }}</span>
-              <span class="text-muted ms-1 d-none d-md-inline">({{ total }} resultados)</span>
-            </span>
+            <span class="page-link">Pág. {{ page }} de {{ totalPages() }} ({{ total }} resultados)</span>
           </li>
           <li class="page-item" [class.disabled]="page >= totalPages()">
-            <a class="page-link" (click)="nextPage()">
-              <span class="d-none d-md-inline">Siguiente </span>
-              <i class="bi bi-chevron-right"></i>
-            </a>
+            <a class="page-link" (click)="nextPage()"><i class="bi bi-chevron-right"></i></a>
           </li>
         </ul>
       </nav>
@@ -217,18 +146,13 @@
 }
 
 @if (showForm()) {
-  <app-bottom-sheet
-    [title]="editingProduct() ? 'Editar producto' : 'Nuevo producto'"
-    (close)="cancelForm()">
-
+  <app-bottom-sheet [title]="editingProduct() ? 'Editar producto' : 'Nuevo producto'" (close)="cancelForm()">
     <div class="form-container">
       @if (formError) {
         <div class="alert alert-danger d-flex align-items-center py-2 small" role="alert">
-          <i class="bi bi-exclamation-triangle me-2"></i>
-          {{ formError }}
+          <i class="bi bi-exclamation-triangle me-2"></i>{{ formError }}
         </div>
       }
-
       <form (ngSubmit)="save()" #productForm="ngForm">
         <div class="mb-3">
           <label class="form-label fw-medium">Nombre</label>
@@ -257,11 +181,9 @@
           </select>
         </div>
         <button type="submit" class="btn btn-primary w-100">
-          <i class="bi bi-check-lg me-1"></i>
-          {{ editingProduct() ? 'Guardar cambios' : 'Crear producto' }}
+          <i class="bi bi-check-lg me-1"></i>{{ editingProduct() ? 'Guardar cambios' : 'Crear producto' }}
         </button>
       </form>
     </div>
-
   </app-bottom-sheet>
 }

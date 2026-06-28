@@ -34,11 +34,12 @@ export class ProductsPage implements OnInit {
   formCategoryId: number | null = null;
 
   filterName = '';
-  sortBy = 'id';
-  order = 'ASC';
+  orderBy: 'id' | 'name' | 'price' | 'stock' = 'id';
+  order: 'asc' | 'desc' = 'asc';
   page = 1;
   limit = 10;
   total = 0;
+  totalPagesCount = 0;
 
   async ngOnInit(): Promise<void> {
     this.loadProducts();
@@ -54,13 +55,14 @@ export class ProductsPage implements OnInit {
     try {
       const res = await firstValueFrom(this.productsService.findAll({
         name: this.filterName || undefined,
-        sortBy: this.sortBy as 'id' | 'name' | 'price' | 'stock',
-        order: this.order as 'ASC' | 'DESC',
+        orderBy: this.orderBy,
+        order: this.order,
         page: this.page,
         limit: this.limit,
       }));
-      this.products.set(res.items);
-      this.total = res.total;
+      this.products.set(res.data);
+      this.total = res.meta.total;
+      this.totalPagesCount = res.meta.totalPages;
     } catch {
       this.error = 'Error al cargar productos';
     } finally {
@@ -68,80 +70,38 @@ export class ProductsPage implements OnInit {
     }
   }
 
-  search(): void {
-    this.page = 1;
-    this.loadProducts();
-  }
-
-  prevPage(): void {
-    if (this.page > 1) {
-      this.page--;
-      this.loadProducts();
-    }
-  }
-
-  nextPage(): void {
-    if (this.page < this.totalPages()) {
-      this.page++;
-      this.loadProducts();
-    }
-  }
-
-  totalPages(): number {
-    return Math.ceil(this.total / this.limit);
-  }
+  search(): void { this.page = 1; this.loadProducts(); }
+  prevPage(): void { if (this.page > 1) { this.page--; this.loadProducts(); } }
+  nextPage(): void { if (this.page < this.totalPagesCount) { this.page++; this.loadProducts(); } }
+  totalPages(): number { return this.totalPagesCount; }
 
   openNew(): void {
     this.editingProduct.set(null);
-    this.formName = '';
-    this.formPrice = 0;
-    this.formStock = 0;
-    this.formCategoryId = null;
-    this.formError = '';
-    this.showForm.set(true);
+    this.formName = ''; this.formPrice = 0; this.formStock = 0; this.formCategoryId = null;
+    this.formError = ''; this.showForm.set(true);
   }
 
   openEdit(product: Product): void {
     this.editingProduct.set(product);
-    this.formName = product.name;
-    this.formPrice = product.price;
-    this.formStock = product.stock;
-    this.formCategoryId = product.categoryId;
-    this.formError = '';
-    this.showForm.set(true);
+    this.formName = product.name; this.formPrice = product.price;
+    this.formStock = product.stock; this.formCategoryId = product.category?.id ?? null;
+    this.formError = ''; this.showForm.set(true);
   }
 
-  cancelForm(): void {
-    this.showForm.set(false);
-    this.editingProduct.set(null);
-    this.formError = '';
-  }
+  cancelForm(): void { this.showForm.set(false); this.editingProduct.set(null); this.formError = ''; }
 
   async save(): Promise<void> {
     this.formError = '';
     try {
       if (this.editingProduct()) {
-        const dto: UpdateProductDto = {
-          name: this.formName,
-          price: this.formPrice,
-          stock: this.formStock,
-          categoryId: this.formCategoryId,
-        };
+        const dto: UpdateProductDto = { name: this.formName, price: this.formPrice, stock: this.formStock, categoryId: this.formCategoryId };
         await firstValueFrom(this.productsService.update(this.editingProduct()!.id, dto));
       } else {
-        const dto: CreateProductDto = {
-          name: this.formName,
-          price: this.formPrice,
-          stock: this.formStock,
-          categoryId: this.formCategoryId,
-        };
+        const dto: CreateProductDto = { name: this.formName, price: this.formPrice, stock: this.formStock, categoryId: this.formCategoryId };
         await firstValueFrom(this.productsService.create(dto));
       }
-      this.loadProducts();
-      this.cancelForm();
-    } catch (err: any) {
-      this.formError = err.error?.message || 'Error al guardar';
-    }
+      this.loadProducts(); this.cancelForm();
+    } catch (err: any) { this.formError = err.error?.message || 'Error al guardar'; }
   }
 
   async deleteProduct(id: number): Promise<void> {
@@ -149,8 +109,6 @@ export class ProductsPage implements OnInit {
     try {
       await firstValueFrom(this.productsService.remove(id));
       this.loadProducts();
-    } catch (err: any) {
-      this.error = err.error?.message || 'Error al eliminar';
-    }
+    } catch (err: any) { this.error = err.error?.message || 'Error al eliminar'; }
   }
 }

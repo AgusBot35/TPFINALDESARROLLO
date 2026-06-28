@@ -10,7 +10,7 @@ import { UserRol } from "./types/user-role.enum";
 import { Payload } from "./types/payload.type";
 import { UserRegister } from "./dto/user-register.dto";
 import { UserLogin } from "./dto/user-login.dto";
-import { AuthResult } from "./dto/auth-result.dto";
+import { AuthResult, LoginResult, SafeUser } from "./dto/auth-result.dto";
 import { UserEntity } from "../users/entities/user.entity";
 import { MailService } from '../mail/mail.service';
 
@@ -42,7 +42,7 @@ export class AuthService {
         const role = countUsers === 0 ? UserRol.ADMIN : UserRol.USER;
 
         const user = this.usersRepo.create({
-            email: userRegister.email,
+            email: userRegister.email.trim().toLowerCase(),
             passwordHash,
             role
         });
@@ -61,11 +61,9 @@ export class AuthService {
             email: userSaved.email,
             role: userSaved.role
         };
-
-        
     }
 
-    async login(userLogin: UserLogin): Promise<{ access_token: string }> {
+    async login(userLogin: UserLogin): Promise<LoginResult> {
         const email = userLogin.email.trim().toLowerCase();
 
         const user = await this.usersRepo.createQueryBuilder('user')
@@ -78,9 +76,7 @@ export class AuthService {
         }
 
         if (!user.isVerified) {
-            throw new UnauthorizedException(
-                'Debes verificar tu email'
-            );
+            throw new UnauthorizedException('Debes verificar tu email');
         }
         
         const ok = await bcrypt.compare(userLogin.password, user.passwordHash);
@@ -95,20 +91,38 @@ export class AuthService {
 
         const access_token = this.jwtService.sign(payload);
 
-        return { access_token };
+        const safeUser: SafeUser = {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            isVerified: user.isVerified,
+            createdAt: user.createdAt
+        };
+
+        return { user: safeUser, access_token };
+    }
+
+    async me(userId: string): Promise<SafeUser> {
+        const user = await this.usersRepo.findOne({ where: { id: userId } });
+        if (!user) {
+            throw new UnauthorizedException('Usuario no encontrado');
+        }
+        return {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            isVerified: user.isVerified,
+            createdAt: user.createdAt
+        };
     }
 
     async verifyEmail(token: string) {
         const user = await this.usersRepo.findOne({
-            where: {
-                verificationToken: token
-            }
+            where: { verificationToken: token }
         });
 
         if (!user) {
-            throw new BadRequestException(
-                'Token inválido o expirado'
-            );
+            throw new BadRequestException('Token inválido o expirado');
         }
 
         user.isVerified = true;
@@ -116,16 +130,12 @@ export class AuthService {
 
         await this.usersRepo.save(user);
 
-        return {
-            message: 'Email verificado'
-        };
+        return { message: 'Email verificado' };
     }
 
     async resendVerificationEmail(email: string) {
         const user = await this.usersRepo.findOne({
-            where: {
-                email: email.trim().toLowerCase()
-            }
+            where: { email: email.trim().toLowerCase() }
         });
 
         if (!user) {
@@ -141,13 +151,8 @@ export class AuthService {
 
         await this.usersRepo.save(user);
 
-        await this.mailService.sendVerificationEmail(
-            user.email,
-            token
-        );
+        await this.mailService.sendVerificationEmail(user.email, token);
 
-        return {
-            message: 'Correo de verificación reenviado'
-        };
+        return { message: 'Correo de verificación reenviado' };
     }
 }

@@ -20,10 +20,10 @@ export class ProductsService {
     let params = new HttpParams();
     if (query) {
       if (query.name) params = params.set('name', query.name);
-      if (query.sortBy) params = params.set('sortBy', query.sortBy);
+      if (query.orderBy) params = params.set('orderBy', query.orderBy);
       if (query.order) params = params.set('order', query.order);
-      if (query.page) params = params.set('page', query.page);
-      if (query.limit) params = params.set('limit', query.limit);
+      if (query.page) params = params.set('page', String(query.page));
+      if (query.limit) params = params.set('limit', String(query.limit));
     }
     return this.http.get<PaginatedProducts>(this.api, { params });
   }
