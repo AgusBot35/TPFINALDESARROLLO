@@ -11,12 +11,14 @@
             </p>
 
             <p class="mt-3 text-center text-muted mb-0">
-                Sino te llego, presiona el boton de abajo para reenviar el correo.
+                Si no te llego, presiona el boton de abajo para reenviar el correo.
             </p>
 
             <p></p>
 
-            <button type="resend" class="btn btn-primary w-100">Reenviar correo de verificación</button>
+            <button type="button" class="btn btn-primary w-100" (click)="resendVerificationEmail()">
+                Reenviar correo de verificación
+            </button>
         </div>
         </div>
     </div>

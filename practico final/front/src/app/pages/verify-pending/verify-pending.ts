@@ -5,7 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-verify-pending',
   standalone: true,
-  templateUrl: './verify-pending.html'
+  templateUrl: './verify-pending.html',
+  styleUrl: './verify-pending.css',
 })
 export class VerifyPendingPage implements OnInit {
     constructor(
@@ -13,4 +14,11 @@ export class VerifyPendingPage implements OnInit {
         private authService: AuthService
     ) {}
   ngOnInit() {}
+
+  async resendVerificationEmail(): Promise<void> {
+    const email = this.route.snapshot.queryParamMap.get('email');
+    console.log('email:', email);
+    if (!email) return;
+    await this.authService.resendVerificationEmail(email).subscribe();
+  }
 }

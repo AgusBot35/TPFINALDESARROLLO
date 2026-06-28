@@ -120,4 +120,34 @@ export class AuthService {
             message: 'Email verificado'
         };
     }
+
+    async resendVerificationEmail(email: string) {
+        const user = await this.usersRepo.findOne({
+            where: {
+                email: email.trim().toLowerCase()
+            }
+        });
+
+        if (!user) {
+            throw new BadRequestException('Email no registrado');
+        }
+
+        if (user.isVerified) {
+            throw new BadRequestException('Email ya verificado');
+        }
+
+        const token = randomUUID();
+        user.verificationToken = token;
+
+        await this.usersRepo.save(user);
+
+        await this.mailService.sendVerificationEmail(
+            user.email,
+            token
+        );
+
+        return {
+            message: 'Correo de verificación reenviado'
+        };
+    }
 }

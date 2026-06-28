@@ -64,8 +64,12 @@ export class AuthService {
 
   verifyEmail(token: string) {
     return this.http.post(
-      'http://localhost:3000/auth/verify-email',
+      `${this.api}/verify-email`,
       { token }
     );
+  }
+
+  resendVerificationEmail(email: string) {
+    return this.http.post(`${this.api}/resend-verification-email`, { email });
   }
 }

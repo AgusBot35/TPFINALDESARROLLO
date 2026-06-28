@@ -24,5 +24,10 @@ export class AuthController {
     @Post('verify-email')
         verifyEmail(@Body() dto: VerifyEmailDto) {
         return this.authService.verifyEmail(dto.token);
-}
+    }
+
+    @Post('resend-verification-email')
+    async resendVerificationEmail(@Body() { email }: { email: string }) {
+        return this.authService.resendVerificationEmail(email);
+    }
 }
