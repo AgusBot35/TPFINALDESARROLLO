@@ -26,7 +26,7 @@ export class ProductsController {
     @Query('limit') limit?: string
   ) {
     const parsedPage = Number(page ?? '1');
-    const parsedLimit = Number(limit ?? '50');
+    const parsedLimit = Number(limit ?? '100');
     return this.productsService.findAll({ page: parsedPage, limit: parsedLimit}, name, sortBy, order);
   }
 

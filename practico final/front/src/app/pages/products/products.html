@@ -9,14 +9,8 @@
       </button>
     }
   </div>
-
-  @if (error) {
-    <div class="alert alert-danger d-flex align-items-center" role="alert">
-      <i class="bi bi-exclamation-triangle me-2"></i>
-      {{ error }}
-    </div>
-  }
-
+  <app-toast></app-toast>
+  <router-outlet></router-outlet>
   <div class="card shadow-sm mb-4">
     <div class="card-body">
       <div class="row g-2 align-items-end">

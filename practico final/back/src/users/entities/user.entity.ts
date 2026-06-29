@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 import { UserRol } from "../../auth/types/user-role.enum";
 
@@ -27,4 +27,7 @@ export class UserEntity {
 
     @Column({ type: 'timestamp', nullable: true, name: 'reset_password_expires' })
     resetPasswordExpires!: Date | null;
+
+    @CreateDateColumn({ name: 'created_at' })
+    createdAt!: Date;
 }

@@ -3,29 +3,31 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
+import { ToastComponent } from '../../shared/toast/toast';
+
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, ToastComponent],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
 export class RegisterPage {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private toast = inject(ToastService)
 
   email = '';
   password = '';
   confirmPassword = '';
-  error = '';
   loading = signal(false);
 
   async submit(): Promise<void> {
-    this.error = '';
     this.loading.set(true);
 
     if (this.password !== this.confirmPassword) {
-      this.error = 'Las contraseñas no coinciden';
+      this.toast.error('Las contraseñas no coinciden');
       this.loading.set(false);
       return;
     }
@@ -34,7 +36,7 @@ export class RegisterPage {
       await firstValueFrom(this.auth.register({ email: this.email, password: this.password }));
       this.router.navigate(['/verify-pending'],{ queryParams: { email: this.email } });
     } catch (err: any) {
-      this.error = err.error?.message || 'Error al registrarse';
+      this.toast.error(err.error?.message || 'Error al registrarse');
     } finally {
       this.loading.set(false);
     }

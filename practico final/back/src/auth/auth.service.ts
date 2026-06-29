@@ -24,7 +24,7 @@ export class AuthService {
         private readonly mailService: MailService
     ) {}
 
-    async register(userRegister: UserRegister): Promise<AuthResult> {
+    async register(userRegister: UserRegister): Promise<{ user: { id: string; email: string; role: UserRol; createdAt: Date }, access_token: string }> {
         const exists = await this.usersRepo.findOne({
             where: { email: userRegister.email.trim().toLowerCase() }
         });
@@ -49,23 +49,28 @@ export class AuthService {
 
         user.verificationToken = token;
         user.isVerified = false;
+        const userSaved = await this.usersRepo.save(user);
 
         await this.mailService.sendVerificationEmail(
             user.email,
             token
         );
 
-        const userSaved = await this.usersRepo.save(user);
         return {
-            sub: userSaved.id,
-            email: userSaved.email,
-            role: userSaved.role
+            user: {
+                id: userSaved.id,
+                email: userSaved.email,
+                role: userSaved.role,
+                createdAt: userSaved.createdAt
+            },
+            access_token: this.jwtService.sign({
+                sub: userSaved.id,
+                role: userSaved.role
+            })
         };
-
-        
     }
 
-    async login(userLogin: UserLogin): Promise<{ access_token: string }> {
+    async login(userLogin: UserLogin): Promise<{ user: { id: string; email: string; role: UserRol; createdAt: Date }, access_token: string }> {
         const email = userLogin.email.trim().toLowerCase();
 
         const user = await this.usersRepo.createQueryBuilder('user')
@@ -95,7 +100,15 @@ export class AuthService {
 
         const access_token = this.jwtService.sign(payload);
 
-        return { access_token };
+        return {
+            user: {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+                createdAt: user.createdAt
+            },
+            access_token: access_token
+        };
     }
 
     async verifyEmail(token: string) {
@@ -159,8 +172,8 @@ export class AuthService {
             id: user?.id,
             email: user?.email,
             role: user?.role,
-            isVerified: user?.isVerified
-            // createdAt: user?.createdAt,
+            isVerified: user?.isVerified,
+            createdAt: user?.createdAt,
         };
         return user_logged;
     }

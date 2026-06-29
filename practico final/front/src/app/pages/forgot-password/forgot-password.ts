@@ -16,7 +16,7 @@ export class ForgotPasswordPage implements OnInit {
     ngOnInit(): void {
         this.ForgotPassword();
     }
-
+    
     async ForgotPassword(): Promise<void> {
         const email = this.route.snapshot.queryParamMap.get('email');
         console.log('email:', email);

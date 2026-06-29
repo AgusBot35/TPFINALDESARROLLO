@@ -5,6 +5,10 @@ import { UsersService } from './services/users.service';
 import { USERS_GATEWAY } from './gateways/users.gateway';
 import { JsonPlaceholderUsersGateway } from './gateways/jsonplaceholder-users.gateway';
 import { LocalUsersGateway } from './gateways/local-users.gateway';
+import { USERS_REPOSITORY } from './repositories/users.repository';
+import { TypeORMUsersRepository } from './repositories/typeorm-Users.repository';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from './entities/user.entity';
 
 @Global()
 @Module({
@@ -19,6 +23,13 @@ import { LocalUsersGateway } from './gateways/local-users.gateway';
           : new JsonPlaceholderUsersGateway()
       }
     },
+    {
+      provide: USERS_REPOSITORY,
+      useClass: TypeORMUsersRepository,
+    }
+  ],
+  imports:[
+    TypeOrmModule.forFeature([UserEntity])
   ],
   exports: [UsersService, USERS_GATEWAY],
 })

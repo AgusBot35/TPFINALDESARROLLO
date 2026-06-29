@@ -4,18 +4,19 @@ export class CreateProductInput {
     @IsString()
     @IsNotEmpty()
     @MinLength(2)
-    @MaxLength(100)
-    name: string;
+    @MaxLength(256)
+    name!: string;
 
-    @IsNumber()
+    @IsNumber({ maxDecimalPlaces: 4 })
     @IsNotEmpty()
     @IsPositive()
-    price: number;
+    price!: number;
 
     @IsInt()
     @IsNotEmpty()
     @Min(0)
-    stock: number;
+    @IsOptional()
+    stock: number = 0;
 
     @IsInt()
     @IsOptional()

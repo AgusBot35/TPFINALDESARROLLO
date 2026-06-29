@@ -24,7 +24,7 @@ export class ProductsService {
 
   async findAll(pagination: PaginationInput, name?: string, orderBy?: 'id' | 'price' | 'name' | 'stock', order?: 'ASC' | 'DESC'): Promise<PaginatedResult<ProductEntity>> {
     const page = Math.max(pagination.page || 1, 1);
-    const limit = Math.min(Math.max(pagination.limit || 1, 1), 50);
+    const limit = Math.min(Math.max(pagination.limit || 1, 1), 100);
     
     return this.productsRepository.findAll(page, limit, name, orderBy, order);
   }

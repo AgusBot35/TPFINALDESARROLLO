@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterOutlet } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ProductsService } from '../../services/products.service';
 import { CategoriesService } from '../../services/categories.service';
@@ -8,23 +8,26 @@ import { AuthService } from '../../services/auth.service';
 import { BottomSheet } from '../../shared/bottom-sheet/bottom-sheet';
 import { Product, CreateProductDto, UpdateProductDto } from '../../models/product';
 import { Category } from '../../models/category';
+import { ToastComponent } from "../../shared/toast/toast";
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-products',
-  imports: [FormsModule, RouterLink, BottomSheet],
+  imports: [FormsModule, RouterLink, BottomSheet, ToastComponent, RouterOutlet],
   templateUrl: './products.html',
   styleUrl: './products.css',
 })
 export class ProductsPage implements OnInit {
   private productsService = inject(ProductsService);
   private categoriesService = inject(CategoriesService);
+  private toast = inject(ToastService)
+
   auth = inject(AuthService);
 
   products = signal<Product[]>([]);
   categories = signal<Category[]>([]);
   editingProduct = signal<Product | null>(null);
   showForm = signal(false);
-  error = '';
   formError = '';
   loading = signal(false);
 
@@ -50,7 +53,6 @@ export class ProductsPage implements OnInit {
 
   async loadProducts(): Promise<void> {
     this.loading.set(true);
-    this.error = '';
     try {
       const res = await firstValueFrom(this.productsService.findAll({
         name: this.filterName || undefined,
@@ -62,7 +64,7 @@ export class ProductsPage implements OnInit {
       this.products.set(res.items);
       this.total = res.total;
     } catch {
-      this.error = 'Error al cargar productos';
+      this.toast.error('Error al cargar productos');
     } finally {
       this.loading.set(false);
     }
@@ -136,11 +138,12 @@ export class ProductsPage implements OnInit {
           categoryId: this.formCategoryId,
         };
         await firstValueFrom(this.productsService.create(dto));
+        this.toast.success('Producto creado exitosamente')
       }
       this.loadProducts();
       this.cancelForm();
     } catch (err: any) {
-      this.formError = err.error?.message || 'Error al guardar';
+      this.toast.error(err.error?.message || 'Error al guardar');
     }
   }
 
@@ -150,7 +153,7 @@ export class ProductsPage implements OnInit {
       await firstValueFrom(this.productsService.remove(id));
       this.loadProducts();
     } catch (err: any) {
-      this.error = err.error?.message || 'Error al eliminar';
+      this.toast.error(err.error?.message || 'Error al eliminar');
     }
   }
 }

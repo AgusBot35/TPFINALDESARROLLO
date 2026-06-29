@@ -1,0 +1,20 @@
+<div class="toast-container" aria-live="polite" aria-atomic="true">
+  @if (currentToast) {
+    <div
+      class="toast toast--{{ currentToast.type }}"
+      role="alert"
+      [class.toast--visible]="visible"
+    >
+      <span class="toast__icon">
+        @switch (currentToast.type) {
+          @case ('success') { ✓ }
+          @case ('error') { ✗ }
+          @case ('warning') { ⚠ }
+          @default { ℹ }
+        }
+      </span>
+      <span class="toast__text">{{ currentToast.text }}</span>
+      <button class="toast__close" (click)="dismiss()" aria-label="Cerrar">×</button>
+    </div>
+  }
+</div>

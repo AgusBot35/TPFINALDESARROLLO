@@ -1,11 +1,10 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, MinLength } from 'class-validator';
 
 export class UserRegister {
-    @IsString()
-    @IsNotEmpty()
+    @IsEmail()
     email!: string;
 
     @IsString()
-    @IsNotEmpty()
+    @MinLength(8)
     password!: string;
 }
