@@ -21,4 +21,10 @@ export class UserEntity {
 
     @Column({ type: 'text', default: UserRol.USER })
     role!: UserRol;
+
+    @Column({ type: 'text', nullable: true, name: 'reset_password_token' })
+    resetPasswordToken!: string | null;
+
+    @Column({ type: 'timestamp', nullable: true, name: 'reset_password_expires' })
+    resetPasswordExpires!: Date | null;
 }

@@ -59,4 +59,43 @@ export class MailService {
 
     }
 
+    async sendForgotPasswordEmail(
+        email: string,
+        token: string
+    ) {
+        const transporter = nodemailer.createTransport({
+
+            host: this.configService.get('SMTP_HOST'),
+            port: Number(this.configService.get('SMTP_PORT')),
+            secure: false,
+            auth: {
+                user: this.configService.get('SMTP_USER'),
+                pass: this.configService.get('SMTP_PASS')
+            }
+        });
+
+        const frontend =
+            this.configService.get('FRONTEND_URL');
+
+        const url =
+            `${frontend}/reset-password?token=${token}`;
+
+        await transporter.sendMail({
+            from:
+                this.configService.get('SMTP_USER'),
+            to: email,
+            subject:
+                'Recuperación de contraseña',
+            html: `
+                <h2>Recuperación de contraseña</h2>
+
+                <p>Haz click en el enlace para restablecer tu contraseña</p>
+
+                <a href="${url}">
+                    Restablecer contraseña
+                </a>
+            `
+        });
+    }
+
 }

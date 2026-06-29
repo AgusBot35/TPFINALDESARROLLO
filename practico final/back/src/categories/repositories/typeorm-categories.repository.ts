@@ -13,29 +13,8 @@ export class TypeOrmCategoriesRepository implements CategoriesRepository {
         private readonly categoriesRepo: Repository<CategoryEntity>
     ) {}
 
-    async findAll(name?: string, order?: 'asc' | 'desc'): Promise<CategoryEntity[]> {
-        return this.createQueryCategory(name, order).getMany();
-    }
-
-    async findPaginated(page: number, limit: number, name?: string, order?: 'asc' | 'desc'): Promise<PaginatedResult<CategoryEntity>> {
-        const start = (page - 1) * limit;
-
-        const [data, total] = await this.createQueryCategory(name, order)
-                                        .take(limit)
-                                        .skip(start)
-                                        .getManyAndCount();
-        
-        const totalPages = Math.ceil(total / limit);
-
-        return {
-            data,
-            meta: {
-                page,
-                limit,
-                total,
-                totalPages
-            }
-        };
+    async findAll(): Promise<CategoryEntity[]> {
+        return this.categoriesRepo.find();
     }
 
     async findById(id: number): Promise<CategoryEntity | null> {
@@ -49,19 +28,5 @@ export class TypeOrmCategoriesRepository implements CategoriesRepository {
 
     async delete(category: CategoryEntity): Promise<CategoryEntity> {
         return this.categoriesRepo.remove(category);
-    }
-
-    private createQueryCategory(name?: string, order?: 'asc' | 'desc') {
-        const query = this.categoriesRepo.createQueryBuilder('category');
-
-        if (name) {
-            query.where('LOWER(category.name) LIKE :name', { name: `%${name.toLowerCase()}%` });
-        }
-
-        if (order) {
-            query.orderBy('category.name', order === 'asc' ? 'ASC' : 'DESC');
-        }
-
-        return query;
     }
 }

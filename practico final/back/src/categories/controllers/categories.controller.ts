@@ -16,19 +16,8 @@ export class CategoriesController {
     ) {}
 
     @Get()
-    async findAll(
-        @Query('name') name?: string,
-        @Query('order') order?: 'asc' | 'desc',
-        @Query('page') page?: string,
-        @Query('limit') limit?: string
-    ) {
-        if (page !== undefined || limit !== undefined) {
-            return this.categoriesService.findPaginated({
-                page: Number(page),
-                limit: Number(limit)
-            }, name, order);
-        }
-        return this.categoriesService.findAll(name, order);
+    async findAll(){
+        return this.categoriesService.findAll();
     }
 
     @Get(':id')

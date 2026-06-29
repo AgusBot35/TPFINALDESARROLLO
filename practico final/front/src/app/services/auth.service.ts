@@ -72,4 +72,16 @@ export class AuthService {
   resendVerificationEmail(email: string) {
     return this.http.post(`${this.api}/resend-verification-email`, { email });
   }
+
+  forgotPassword(email: string) {
+    return this.http.post(`${this.api}/forgot-password`, { email });
+  }
+
+  resendForgotPasswordEmail(email: string) {
+    return this.http.post(`${this.api}/resend-forgot-password-email`, { email });
+  }
+
+  resetPassword(token: string, dto: { password: string }) {
+    return this.http.post(`${this.api}/reset-password`, { token, ...dto });
+  }
 }

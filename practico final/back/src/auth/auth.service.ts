@@ -57,7 +57,7 @@ export class AuthService {
 
         const userSaved = await this.usersRepo.save(user);
         return {
-            id: userSaved.id,
+            sub: userSaved.id,
             email: userSaved.email,
             role: userSaved.role
         };
@@ -148,6 +148,95 @@ export class AuthService {
 
         return {
             message: 'Correo de verificación reenviado'
+        };
+    }
+
+    async me(userId: string) {
+        const user = await this.usersRepo.findOne({
+            where: { id: userId }
+        });
+        const user_logged = {
+            id: user?.id,
+            email: user?.email,
+            role: user?.role,
+            isVerified: user?.isVerified
+            // createdAt: user?.createdAt,
+        };
+        return user_logged;
+    }
+
+    async forgotPassword(email: string) {
+        const user = await this.usersRepo.findOne({
+            where: {
+                email: email.trim().toLowerCase()
+            }
+        });
+        
+        if (!user) {
+            throw new BadRequestException('Email no registrado');
+        }
+
+        const token = randomUUID();
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = new Date(Date.now() + 3600000);
+        await this.usersRepo.save(user);
+
+        await this.mailService.sendForgotPasswordEmail(
+            user.email,
+            token
+        );
+
+        return {
+            message: 'Correo de recuperación de contraseña enviado'
+        };
+
+    }
+
+    async resendForgotPasswordEmail(email: string) {
+        const user = await this.usersRepo.findOne({
+            where: {
+                email: email.trim().toLowerCase()
+            }
+        });
+        if (!user) {
+            throw new BadRequestException('Email no registrado');
+        }
+        const token = randomUUID();
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = new Date(Date.now() + 3600000);
+        await this.usersRepo.save(user);
+
+        await this.mailService.sendForgotPasswordEmail(
+            user.email,
+            token
+        );
+
+        return {
+            message: 'Correo de recuperación de contraseña reenviado'
+        };
+    }
+
+    async resetPassword(token: string, password: string) {
+        const user = await this.usersRepo.findOne({
+            where: {
+                resetPasswordToken: token
+            }
+        });
+
+        if (!user) {
+            throw new BadRequestException('Token de recuperación de contraseña invalido');
+        }
+
+        const cost = Number(this.configService.getOrThrow<string>('BCRYPT_COST') ?? '12');
+        const passwordHash = await bcrypt.hash(password, cost);
+        user.resetPasswordToken = null;
+        user.resetPasswordExpires = null;
+        user.passwordHash = passwordHash;
+
+        await this.usersRepo.save(user);
+
+        return {
+            message: 'Contraseña actualizada'
         };
     }
 }

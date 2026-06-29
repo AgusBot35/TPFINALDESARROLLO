@@ -52,4 +52,14 @@ export const routes: Routes = [
     path: 'verify-pending',
     loadComponent: () => import('./pages/verify-pending/verify-pending').then((m) => m.VerifyPendingPage),
   },
+
+  {
+    path: 'forgot-password', 
+    loadComponent: () => import('./pages/forgot-password/forgot-password').then((m) => m.ForgotPasswordPage)
+  },
+
+  { 
+    path: 'reset-password',
+    loadComponent: () => import('./pages/reset-password/reset-password').then((m) => m.ResetPasswordPage)
+  }
 ]

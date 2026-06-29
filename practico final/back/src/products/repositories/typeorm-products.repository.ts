@@ -17,7 +17,7 @@ export class TypeOrmProductsRepository implements ProductsRepository {
         private readonly productsRepo: Repository<ProductEntity>
     ) {}
 
-    async findAll(page: number, limit: number, name?: string, orderBy?: 'id' | 'price' | 'name' | 'stock', order?: 'asc' | 'desc'): Promise<PaginatedResult<ProductEntity>> {
+    async findAll(page: number, limit: number, name?: string, orderBy?: 'id' | 'price' | 'name' | 'stock', order?: 'ASC' | 'DESC'): Promise<PaginatedResult<ProductEntity>> {
         const start = (page - 1) * limit;
 
         const [data, total] = await this.createQueryProducts(name, orderBy, order)
@@ -25,21 +25,16 @@ export class TypeOrmProductsRepository implements ProductsRepository {
                                         .skip(start)
                                         .getManyAndCount();
 
-        const totalPages = Math.ceil(total / limit);
-
         return {
-            data,
-            meta: {
-                page,
-                limit,
-                total,
-                totalPages
-            }
+            items: data,
+            page,
+            limit,
+            total
         };
     }
 
     async findById(id: number): Promise<ProductEntity | null> {
-        return this.productsRepo.findOneBy({ id });
+        return this.productsRepo.findOne({ where: { id }, relations: ['category'] });
     }
 
     async findProductsByCategory(id: number): Promise<ProductEntity[]> {
@@ -76,7 +71,7 @@ export class TypeOrmProductsRepository implements ProductsRepository {
         return this.productsRepo.remove(product);
     }
 
-    private createQueryProducts(name?: string, orderBy?: 'id' | 'price' | 'name' | 'stock', order?: 'asc' | 'desc') {
+    private createQueryProducts(name?: string, orderBy?: 'id' | 'price' | 'name' | 'stock', order?: 'ASC' | 'DESC') {
         const query = this.productsRepo.createQueryBuilder('product')
                                         .innerJoinAndSelect('product.category', 'category');
 
@@ -85,7 +80,7 @@ export class TypeOrmProductsRepository implements ProductsRepository {
         }
 
         if (orderBy) {
-            query.orderBy(`product.${orderBy}`, order === 'asc' ? 'ASC' : 'DESC');
+            query.orderBy(`product.${orderBy}`, order === 'ASC' ? 'ASC' : 'DESC');
         }
         
         return query;

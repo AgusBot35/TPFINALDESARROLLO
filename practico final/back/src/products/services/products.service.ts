@@ -22,7 +22,7 @@ export class ProductsService {
     private readonly categoriesService: CategoriesService
   ) {}
 
-  async findAll(pagination: PaginationInput, name?: string, orderBy?: 'id' | 'price' | 'name' | 'stock', order?: 'asc' | 'desc'): Promise<PaginatedResult<ProductEntity>> {
+  async findAll(pagination: PaginationInput, name?: string, orderBy?: 'id' | 'price' | 'name' | 'stock', order?: 'ASC' | 'DESC'): Promise<PaginatedResult<ProductEntity>> {
     const page = Math.max(pagination.page || 1, 1);
     const limit = Math.min(Math.max(pagination.limit || 1, 1), 50);
     

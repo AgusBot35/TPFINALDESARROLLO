@@ -20,14 +20,8 @@ export class CategoriesService {
         private readonly productsService: ProductsService
     ) {}
 
-    async findAll(name?: string, order?: 'asc' | 'desc'): Promise<CategoryEntity[]> {
-        return this.categoriesRepo.findAll(name, order);
-    }
-
-    async findPaginated(pagination: PaginationInput, name?: string, order?: 'asc' | 'desc'): Promise<PaginatedResult<CategoryEntity>> {
-        const page = Math.max(pagination.page || 1, 1);
-        const limit = Math.min(Math.max(pagination.limit || 1, 1), 50);
-        return this.categoriesRepo.findPaginated(page, limit, name, order);
+    async findAll(): Promise<CategoryEntity[]> {
+        return this.categoriesRepo.findAll();
     }
 
     async findOne(id: number): Promise<CategoryEntity> {

@@ -20,14 +20,14 @@ export class ProductsController {
   @Get()
   async findAll(
     @Query('name') name: string,
-    @Query('orderBy') orderBy: 'id' | 'price' | 'name' | 'stock',
-    @Query('order') order: 'asc' | 'desc',
+    @Query('sortBy') sortBy: 'id' | 'price' | 'name' | 'stock',
+    @Query('order') order: 'ASC' | 'DESC',
     @Query('page') page?: string,
     @Query('limit') limit?: string
   ) {
     const parsedPage = Number(page ?? '1');
     const parsedLimit = Number(limit ?? '50');
-    return this.productsService.findAll({ page: parsedPage, limit: parsedLimit}, name, orderBy, order);
+    return this.productsService.findAll({ page: parsedPage, limit: parsedLimit}, name, sortBy, order);
   }
 
   @Get(':id')
