@@ -1,8 +1,11 @@
 import { IsString, IsNotEmpty } from 'class-validator';
 
-export type UserLogin = {
+export class UserLogin {
     @IsString()
     @IsNotEmpty()
-    email: string;
-    password: string;
-};
+    email!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    password!: string;
+}

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -10,9 +10,13 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   private auth = inject(AuthService);
   private router = inject(Router);
+  ngOnInit(): void {
+    this.auth.user.set(null);
+    localStorage.removeItem('token'); 
+  }
 
   email = '';
   password = '';
