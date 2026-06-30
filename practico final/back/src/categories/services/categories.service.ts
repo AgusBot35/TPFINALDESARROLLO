@@ -9,6 +9,7 @@ import { CategoryEntity } from '../entities/category.entity';
 
 import { CATEGORIES_REPOSITORY, CategoriesRepository } from '../repositories/categories.repository';
 import { ProductsService } from '../../products/services/products.service';
+import { UpdateCategoryInput } from '../dto/update-category.dto';
 
 @Injectable()
 export class CategoriesService {
@@ -36,6 +37,10 @@ export class CategoriesService {
 
     async create(dto: CreateCategoryInput): Promise<CategoryEntity> {
         return this.categoriesRepo.create(dto);
+    }
+
+    async update(categoryId: string, dto: UpdateCategoryInput): Promise<CategoryEntity> {
+        return this.categoriesRepo.update(Number(categoryId), dto)
     }
 
     async delete(id: number): Promise<CategoryEntity> {

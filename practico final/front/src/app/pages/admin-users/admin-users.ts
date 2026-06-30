@@ -5,26 +5,29 @@ import { firstValueFrom } from 'rxjs';
 import { UsersService } from '../../services/users.service';
 import { SafeUser, UserRole } from '../../models/user';
 import { AuthService } from '../../services/auth.service';
+import { RouterOutlet } from "../../../../node_modules/@angular/router";
+import { ToastComponent } from "../../shared/toast/toast";
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-admin-users',
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, RouterOutlet, ToastComponent],
   templateUrl: './admin-users.html',
   styleUrl: './admin-users.css',
 })
 export class AdminUsersPage implements OnInit {
   private usersService = inject(UsersService);
   auth = inject(AuthService);
+  toast = inject(ToastService)
 
   users = signal<SafeUser[]>([]);
-  error = '';
 
   async ngOnInit(): Promise<void> {
     try {
       const users = await firstValueFrom(this.usersService.findAll());
       this.users.set(users);
     } catch {
-      this.error = 'Error al cargar usuarios';
+      this.toast.error('Error al cargar usuarios');
     }
   }
 
@@ -35,7 +38,7 @@ export class AdminUsersPage implements OnInit {
         users.map((u) => (u.id === updated.id ? updated : u)),
       );
     } catch (err: any) {
-      this.error = err.error?.message || 'Error al cambiar rol';
+      this.toast.error(err.error?.message || 'Error al cambiar rol');
     }
   }
 }

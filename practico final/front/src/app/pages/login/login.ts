@@ -1,36 +1,33 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { ToastComponent } from "../../shared/toast/toast";
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule, RouterLink],
+  imports: [FormsModule, RouterLink, ToastComponent, RouterOutlet],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class LoginPage implements OnInit {
+export class LoginPage {
   private auth = inject(AuthService);
   private router = inject(Router);
-  ngOnInit(): void {
-    this.auth.user.set(null);
-    localStorage.removeItem('token'); 
-  }
+  private toast = inject(ToastService)
 
   email = '';
   password = '';
-  error = '';
   loading = signal(false);
 
   async submit(): Promise<void> {
-    this.error = '';
     this.loading.set(true);
     try {
       await firstValueFrom(this.auth.login({ email: this.email, password: this.password }));
       this.router.navigate(['/']);
     } catch (err: any) {
-      this.error = err.error?.message || 'Error al iniciar sesión';
+      this.toast.error(err.error?.message || 'Error al iniciar sesión');
     } finally {
       this.loading.set(false);
     }

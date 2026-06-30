@@ -1,17 +1,19 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Router, RouterLink } from '@angular/router';
+import { ToastComponent } from "../../shared/toast/toast";
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-verify-email',
   standalone: true,
   templateUrl: './verify-email.html',
   styleUrl: './verify-email.css',
-  imports: [RouterLink],
+  imports: [RouterLink, ToastComponent, RouterOutlet],
 })
 export class VerifyEmailComponent implements OnInit {
-
+  private toast = inject(ToastService)
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
@@ -25,10 +27,10 @@ export class VerifyEmailComponent implements OnInit {
 
     this.authService.verifyEmail(token).subscribe({
       next: (res) => {
-        console.log('Correo verificado', res);
+        this.toast.success('Email verificado correctamente');
       },
       error: (err) => {
-        console.error('Error al verificar', err);
+        this.toast.error('Token inválido o expirado');
       }
     });
   }

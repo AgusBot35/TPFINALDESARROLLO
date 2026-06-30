@@ -9,4 +9,6 @@ export interface UsersRepository {
   create(input: DeepPartial<UserEntity>): Promise<UserEntity>;
   update(user: UserEntity, input: DeepPartial<UserEntity>): Promise<UserEntity>;
   delete(user: UserEntity): Promise<UserEntity>;
+  findByIdWithPassword(id: string): Promise<UserEntity | null>;
+  save(user: DeepPartial<UserEntity>): Promise<UserEntity>;
 }

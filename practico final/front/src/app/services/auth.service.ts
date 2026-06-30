@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, WritableSignal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse, LoginDto, RegisterDto } from '../models/auth';
@@ -83,5 +83,9 @@ export class AuthService {
 
   resetPassword(token: string, dto: { password: string }) {
     return this.http.post(`${this.api}/reset-password`, { token, ...dto });
+  }
+
+  getUser(): WritableSignal<SafeUser | null> {
+    return this.user;
   }
 }

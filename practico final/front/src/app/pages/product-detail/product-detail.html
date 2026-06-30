@@ -4,12 +4,8 @@
       <i class="bi bi-arrow-left me-1"></i>Volver a productos
     </a>
 
-    @if (error) {
-      <div class="alert alert-danger d-flex align-items-center" role="alert">
-        <i class="bi bi-exclamation-triangle me-2"></i>
-        {{ error }}
-      </div>
-    }
+    <app-toast></app-toast>
+    <router-outlet></router-outlet>
 
     @if (product(); as p) {
       <div class="card shadow-sm">

@@ -26,5 +26,16 @@ export class TypeORMUsersRepository implements UsersRepository {
     delete(user: UserEntity): Promise<UserEntity> {
         return this.usersRepo.remove(user);
     }
+
+    async findByIdWithPassword(id: string): Promise<UserEntity | null> {
+        return this.usersRepo.createQueryBuilder('u')
+                            .addSelect('u.passwordHash')
+                            .where('u.id = :id', { id })
+                            .getOne();
+    }
+
+    save(user: DeepPartial<UserEntity>): Promise<UserEntity> {
+        return this.usersRepo.save(user)
+    }
     
 }

@@ -1,0 +1,57 @@
+<div class="row justify-content-center mt-5">
+  <div class="col-md-5 col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <div class="text-center mb-4">
+          <i class="bi bi-envelope-at display-5" style="color: var(--primary)"></i>
+          <h3 class="mt-2 fw-bold">Cambiar email</h3>
+          <p class="text-muted mb-0">Ingresá tu nuevo email y confirmá tu contraseña actual</p>
+        </div>
+
+        <app-toast></app-toast>
+
+        <form (ngSubmit)="submit()" #form="ngForm">
+          <div class="mb-3">
+            <label for="newEmail" class="form-label fw-medium">Nuevo email</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+              <input
+                id="newEmail"
+                type="email"
+                class="form-control"
+                [(ngModel)]="newEmail"
+                name="newEmail"
+                required
+                email
+                placeholder="nuevo@correo.com"
+              />
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="password" class="form-label fw-medium">Contraseña actual</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-lock"></i></span>
+              <input
+                id="password"
+                type="password"
+                class="form-control"
+                [(ngModel)]="password"
+                name="password"
+                required
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100" [disabled]="form.invalid || loading()">
+            @if (loading()) {
+              <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+            }
+            Guardar cambios
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

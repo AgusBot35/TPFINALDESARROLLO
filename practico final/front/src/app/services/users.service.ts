@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SafeUser, UpdateUserRoleDto } from '../models/user';
+import { ChangeEmail, ChangePassword, SafeUser, UpdateUserRoleDto } from '../models/user';
 import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -16,5 +16,13 @@ export class UsersService {
 
   updateRole(id: string, dto: UpdateUserRoleDto): Observable<SafeUser> {
     return this.http.patch<SafeUser>(`${this.api}/users/${id}/role`, dto);
+  }
+
+  changePassword(dto: ChangePassword){
+    return this.http.patch<{message: string}>(`${this.api}/users/me/password`, dto)
+  }
+
+  changeEmail(dto: ChangeEmail){
+    return this.http.patch<{message: string}>(`${this.api}/users/me/email`, dto)
   }
 }

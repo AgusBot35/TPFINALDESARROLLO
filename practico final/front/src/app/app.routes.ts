@@ -61,5 +61,15 @@ export const routes: Routes = [
   { 
     path: 'reset-password',
     loadComponent: () => import('./pages/reset-password/reset-password').then((m) => m.ResetPasswordPage)
+  },
+
+  {
+    path: 'change-password',
+    loadComponent: () => import('./pages/change-password/change-password').then((m) => m.ChangePasswordPage)
+  },
+
+  {
+    path: 'change-email',
+    loadComponent: () => import('./pages/change-email/change-email').then((m) => m.ChangeEmailPage)
   }
 ]

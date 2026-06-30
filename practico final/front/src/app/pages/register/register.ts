@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterOutlet} from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
@@ -9,7 +9,7 @@ import { ToastComponent } from '../../shared/toast/toast';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule, RouterLink, ToastComponent],
+  imports: [FormsModule, RouterLink, ToastComponent, RouterOutlet],
   templateUrl: './register.html',
   styleUrl: './register.css',
 })
@@ -34,6 +34,7 @@ export class RegisterPage {
 
     try {
       await firstValueFrom(this.auth.register({ email: this.email, password: this.password }));
+      this.toast.success('Revisá tu email. Te enviamos un link de verificación')
       this.router.navigate(['/verify-pending'],{ queryParams: { email: this.email } });
     } catch (err: any) {
       this.toast.error(err.error?.message || 'Error al registrarse');

@@ -7,6 +7,7 @@
           <h3 class="mt-2 fw-bold">Registrarse</h3>
         </div>
         <app-toast></app-toast>
+        <router-outlet></router-outlet>
         <form (ngSubmit)="submit()" #form="ngForm">
           <div class="mb-3">
             <label for="email" class="form-label fw-medium">Email</label>

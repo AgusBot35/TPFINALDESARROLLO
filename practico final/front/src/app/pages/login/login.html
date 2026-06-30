@@ -7,12 +7,8 @@
           <h3 class="mt-2 fw-bold">Iniciar sesión</h3>
         </div>
 
-        @if (error) {
-          <div class="alert alert-danger d-flex align-items-center" role="alert">
-            <i class="bi bi-exclamation-triangle me-2"></i>
-            {{ error }}
-          </div>
-        }
+        <app-toast></app-toast>
+        <router-outlet></router-outlet>
 
         <form (ngSubmit)="submit()" #form="ngForm">
           <div class="mb-3">
@@ -55,11 +51,9 @@
             Ingresar
           </button>
 
-          @if (error === 'Credenciales inválidas') {
-            <p class="mt-3 text-center text-muted mb-0">
-              ¿Olvidaste tu contraseña? <a routerLink="/forgot-password" [queryParams]="{ email: email }">Recuperala</a>
-            </p>
-          }
+          <p class="mt-3 text-center text-muted mb-0">
+            ¿Olvidaste tu contraseña? <a routerLink="/forgot-password" [queryParams]="{ email: email }">Recuperala</a>
+          </p>
         </form>
 
         <p class="mt-4 text-center text-muted mb-0">

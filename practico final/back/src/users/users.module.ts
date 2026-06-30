@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { forwardRef, Global, Module } from '@nestjs/common';
 
 import { UsersController } from './controllers/users.controller';
 import { UsersService } from './services/users.service';
@@ -9,6 +9,9 @@ import { USERS_REPOSITORY } from './repositories/users.repository';
 import { TypeORMUsersRepository } from './repositories/typeorm-Users.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
+import { AuthModule } from 'src/auth/auth.module';
+import { MailService } from 'src/mail/mail.service';
+import { MailModule } from 'src/mail/mail.module';
 
 @Global()
 @Module({
@@ -29,7 +32,8 @@ import { UserEntity } from './entities/user.entity';
     }
   ],
   imports:[
-    TypeOrmModule.forFeature([UserEntity])
+    TypeOrmModule.forFeature([UserEntity]),
+    MailModule
   ],
   exports: [UsersService, USERS_GATEWAY],
 })

@@ -5,22 +5,25 @@ import { CategoriesService } from '../../services/categories.service';
 import { AuthService } from '../../services/auth.service';
 import { BottomSheet } from '../../shared/bottom-sheet/bottom-sheet';
 import { Category } from '../../models/category';
+import { ToastComponent } from "../../shared/toast/toast";
+import { RouterOutlet } from "../../../../node_modules/@angular/router";
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-categories',
-  imports: [FormsModule, BottomSheet],
+  imports: [FormsModule, BottomSheet, ToastComponent, RouterOutlet],
   templateUrl: './categories.html',
   styleUrl: './categories.css',
 })
 export class CategoriesPage implements OnInit {
   private service = inject(CategoriesService);
   auth = inject(AuthService);
+  toast = inject(ToastService)
 
   categories = signal<Category[]>([]);
   editingCat = signal<Category | null>(null);
   newName = '';
   editName = '';
-  error = '';
   formError = '';
   loading = signal(false);
 
@@ -30,12 +33,11 @@ export class CategoriesPage implements OnInit {
 
   async load(): Promise<void> {
     this.loading.set(true);
-    this.error = '';
     try {
       const cats = await firstValueFrom(this.service.findAll());
       this.categories.set(cats);
     } catch {
-      this.error = 'Error al cargar categorías';
+      this.toast.error('Error al cargar categorías');
     } finally {
       this.loading.set(false);
     }
@@ -48,7 +50,7 @@ export class CategoriesPage implements OnInit {
       this.newName = '';
       await this.load();
     } catch (err: any) {
-      this.error = err.error?.message || 'Error al crear';
+      this.toast.error(err.error?.message || 'Error al crear');
     }
   }
 
@@ -73,7 +75,7 @@ export class CategoriesPage implements OnInit {
       this.cancelEdit();
       await this.load();
     } catch (err: any) {
-      this.formError = err.error?.message || 'Error al actualizar';
+      this.toast.error(err.error?.message || 'Error al actualizar');
     }
   }
 
@@ -83,7 +85,7 @@ export class CategoriesPage implements OnInit {
       await firstValueFrom(this.service.remove(id));
       await this.load();
     } catch (err: any) {
-      this.error = err.error?.message || 'Error al eliminar';
+      this.toast.error(err.error?.message || 'Error al eliminar');
     }
   }
 }
