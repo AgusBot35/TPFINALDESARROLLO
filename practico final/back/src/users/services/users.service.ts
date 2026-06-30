@@ -18,20 +18,33 @@ export class UsersService {
 ) {}
 
   async findAll(){
-      return await this.usersRepository.findAll();
+    return (await this.usersRepository.findAll()).map(user => ({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      isVerified: user.isVerified,
+      createdAt: user.createdAt
+    }));
   }
 
-  async findOne(id: string): Promise<UserEntity> {
+  async findOne(id: string) {
     const user = await this.usersRepository.findById(id);
     if (!user) {
       throw new NotFoundException(`Usuario con ID: ${id} no encontrado`);
     }
-    return user;
+    return {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      isVerified: user.isVerified,
+      createdAt: user.createdAt
+    };
   }
 
   async changeRole(id: string, rol: UserRol): Promise<{id: string, email: string, role: UserRol, createdAt: Date}> {
     const user = await this.findOne(id);
     user.role = rol;
+    this.usersRepository.save(user);
     return {
       id: user.id, 
       email: user.email,

@@ -18,7 +18,7 @@ export default [
   {
     name: "get_product",
     description: "Obtener un producto por su ID",
-    inputSchema: { id: z.string() },
+    inputSchema: { id: z.number().int() },
     handler: async ({ id }: any) => api.get(`/products/${id}`),
   },
   {
@@ -28,7 +28,7 @@ export default [
       name: z.string().nonempty().min(2).max(256),
       price: z.number().refine((v: number) => Number.isInteger(v * 10000), "Máximo 4 decimales").positive().optional(),
       stock: z.number().int().min(0).optional().default(0),
-      categoryID: z.number().int().optional()
+      categoryId: z.number().int().optional()
     },
     handler: async (body: any) => api.post("/products", body),
   },
@@ -36,17 +36,18 @@ export default [
     name: "update_product",
     description: "Actualizar un producto existente (requiere rol Admin)",
     inputSchema: {
+      id: z.number().int(),
       name: z.string().nonempty().min(2).max(256),
       price: z.number().refine((v: number) => Number.isInteger(v * 10000), "Máximo 4 decimales").positive().optional(),
       stock: z.number().int().min(0).optional().default(0),
-      categoryID: z.number().int().optional()
+      categoryId: z.number().int().optional()
     },
     handler: async ({ id, ...body }: any) => api.put(`/products/${id}`, body),
   },
   {
     name: "delete_product",
     description: "Eliminar un producto por su ID (requiere rol Admin)",
-    inputSchema: { id: z.string() },
+    inputSchema: { id: z.number().int() },
     handler: async ({ id }: any) => api.del(`/products/${id}`),
   },
 ] as ToolDef[];

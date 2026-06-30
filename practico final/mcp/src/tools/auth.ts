@@ -6,7 +6,7 @@ export default [
   {
     name: "auth_login",
     description: "Inicia sesión en api-c y guarda el token JWT",
-    inputSchema: { email: z.string().email(), password: z.string() },
+    inputSchema: { email: z.email(), password: z.string() },
     handler: async ({ email, password }: any) => {
       const res = await api.login(email, password);
       api.setToken(res.access_token);
@@ -16,7 +16,7 @@ export default [
   {
     name: "auth_register",
     description: "Registra un nuevo usuario en api-c y guarda el token JWT",
-    inputSchema: { email: z.string().email(), password: z.string().min(8) },
+    inputSchema: { email: z.email(), password: z.string().min(8) },
     handler: async ({ email, password }: any) => {
       const res = await api.register(email, password);
       api.setToken(res.access_token);
