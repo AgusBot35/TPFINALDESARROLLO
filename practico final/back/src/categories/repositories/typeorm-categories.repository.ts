@@ -22,6 +22,10 @@ export class TypeOrmCategoriesRepository implements CategoriesRepository {
         return this.categoriesRepo.findOneBy({ id });
     }
 
+    async findByName(name: string): Promise<CategoryEntity | null> {
+        return this.categoriesRepo.findOneBy({ name })
+    }
+
     async create(dto: CreateCategoryInput): Promise<CategoryEntity> {
         const category = this.categoriesRepo.create(dto);
         return this.categoriesRepo.save(category);

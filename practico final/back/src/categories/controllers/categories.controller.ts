@@ -17,6 +17,7 @@ export class CategoriesController {
     ) {}
 
     @Get()
+    @UseGuards(JwtAuthGuard)
     async findAll(){
         return this.categoriesService.findAll();
     }
@@ -50,5 +51,12 @@ export class CategoriesController {
     @Get(':id/products')
     async findProducts(@Param('id') id: string) {
         return this.categoriesService.findProductsByCategory(Number(id));
+    }
+
+    @Delete(':id')
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(UserRol.ADMIN)
+    async deleteProducts(@Param('id') id: string){
+        return this.categoriesService.delete(Number(id))
     }
 }

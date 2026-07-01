@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Request, UseGuards } from "@nestjs/common";
 
 import { AuthService } from "./auth.service";
 import { UserRegister } from "./dto/user-register.dto";
@@ -27,9 +27,11 @@ export class AuthController {
         return this.authService.verifyEmail(dto.token);
     }
 
-    @Post('resend-verification-email')
-    async resendVerificationEmail(@Body() { email }: { email: string }) {
-        return this.authService.resendVerificationEmail(email);
+    @Post('resend-verification')
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(JwtAuthGuard)
+    async resendVerificationEmail(@Request() request: any) {
+        return this.authService.resendVerificationEmail(request.user.email);
     }
 
     @Get('me')

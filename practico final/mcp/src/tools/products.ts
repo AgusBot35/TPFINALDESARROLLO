@@ -26,7 +26,7 @@ export default [
     description: "Crear un nuevo producto (requiere rol Admin)",
     inputSchema: {
       name: z.string().nonempty().min(2).max(256),
-      price: z.number().refine((v: number) => Number.isInteger(v * 10000), "Máximo 4 decimales").positive().optional(),
+      price: z.number().refine((v: number) => Number.isInteger(v * 10000), "Máximo 4 decimales").positive(),
       stock: z.number().int().min(0).optional().default(0),
       categoryId: z.number().int().optional()
     },

@@ -10,6 +10,7 @@ export const CATEGORIES_REPOSITORY = 'CATEGORIES_REPOSITORY';
 export interface CategoriesRepository {
     findAll(): Promise<CategoryEntity[]>;
     findById(id: number): Promise<CategoryEntity | null>;
+    findByName(name: string): Promise<CategoryEntity | null>
     create(dto: CreateCategoryInput): Promise<CategoryEntity>;
     update(id: number, dto: UpdateCategoryInput): Promise<CategoryEntity>;
     delete(category: CategoryEntity): Promise<CategoryEntity>;

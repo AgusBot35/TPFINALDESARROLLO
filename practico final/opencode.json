@@ -3,7 +3,7 @@
   "mcp": {
     "api-productos": {
       "type": "local",
-      "command": ["npx", "tsx", "mcp/src/index.ts"],
+      "command": ["npx", "tsx", "./mcp/src/index.ts"],
       "enabled": true,
       "environment": {
         "API_C_URL": "http://localhost:3000",

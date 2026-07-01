@@ -146,7 +146,7 @@ export class AuthService {
         }
 
         if (user.isVerified) {
-            throw new BadRequestException('Email ya verificado');
+            return ('Email ya verificado');
         }
 
         const token = randomUUID();

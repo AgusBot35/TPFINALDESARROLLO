@@ -70,7 +70,7 @@ export class AuthService {
   }
 
   resendVerificationEmail(email: string) {
-    return this.http.post(`${this.api}/resend-verification-email`, { email });
+    return this.http.post(`${this.api}/resend-verification`, { email });
   }
 
   forgotPassword(email: string) {

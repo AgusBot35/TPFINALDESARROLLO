@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { USERS_REPOSITORY, UsersRepository } from '../repositories/users.repository';
 import { UserEntity } from '../entities/user.entity';
 import { UserRol } from 'src/auth/types/user-role.enum';
@@ -17,7 +17,13 @@ export class UsersService {
   private readonly mailService: MailService
 ) {}
 
-  async findAll(){
+  async findAll(): Promise<{
+      id: string,
+      email: string,
+      role: UserRol,
+      isVerified: boolean,
+      createdAt: Date
+    }[]> {
     return (await this.usersRepository.findAll()).map(user => ({
       id: user.id,
       email: user.email,
@@ -41,8 +47,13 @@ export class UsersService {
     };
   }
 
-  async changeRole(id: string, rol: UserRol): Promise<{id: string, email: string, role: UserRol, createdAt: Date}> {
+  async changeRole(id: string, userId: string, rol: UserRol): Promise<{id: string, email: string, role: UserRol, createdAt: Date}> {
     const user = await this.findOne(id);
+
+    if (user.id === userId) {
+      throw new ForbiddenException('No puedes cambiar tu propio rol');
+    }
+
     user.role = rol;
     this.usersRepository.save(user);
     return {

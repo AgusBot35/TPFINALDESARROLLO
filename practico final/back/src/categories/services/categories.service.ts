@@ -36,6 +36,9 @@ export class CategoriesService {
     }
 
     async create(dto: CreateCategoryInput): Promise<CategoryEntity> {
+        if(await this.categoriesRepo.findByName(dto.name)){
+            throw new ConflictException("La categoria ya existe")
+        }
         return this.categoriesRepo.create(dto);
     }
 
